@@ -58,7 +58,9 @@ import 'bootstrap';
 import { itemData } from './data/itemData';
 import { values } from './types/values';
 
-const ctx = document.querySelector('#chart-view > canvas');
+const status: values = [
+  {point: 0, item1: 0, item2: 0, item3: 0, item4: 0, item5: 0, item6: 0, item7: 0, item8: 0, item9: 0},
+];
 
 const data = {
   labels: ['攻撃[05]', '防御[05]', '増幅[05]', '生存[05]', '命中[05]', '状態[05]', '祝福[05]'],
@@ -139,8 +141,11 @@ function update(index: number, value: number) {
   data.labels[index] = data.labels[index].replace(/\[.*?\]/, `[${value.toString().padStart(2, '0')}]`);
   myChart.update();
 
+  // 初期化
+  status[0] = {point: 0, item1: 0, item2: 0, item3: 0, item4: 0, item5: 0, item6: 0, item7: 0, item8: 0, item9: 0}
+  document.querySelector('#status-view > table > tbody')!.innerHTML = '';
+
   // ポイント更新
-  let point: number = 0;
   // チャートの全項目（0～6）
   for (let i: number = 0; i < 7; i++) {
     // 項目ごとの現在値（0～20（最大））
@@ -151,15 +156,43 @@ function update(index: number, value: number) {
 
     // 項目ごとの設定値から0~現在値までポイントを加算
     for (let j: number = 0; j <= data; j++) {
-      point += values[j].point;
+      status[0].point += values[j].point;
+      status[0].item1 += values[j].item1;
+      status[0].item2 += values[j].item2;
+      status[0].item3 += values[j].item3;
+      status[0].item4 += values[j].item4;
+      status[0].item5 += values[j].item5;
+      status[0].item6 += values[j].item6;
+      status[0].item7 += values[j].item7;
+      status[0].item8 += values[j].item8;
+      status[0].item9 += values[j].item9;
     }
   }
   
-  document.getElementById('point')!.textContent = point.toString();
+  document.getElementById('point')!.textContent = status[0].point.toString();
 
   // ステータス更新
-  
+  if (status[0].item1 > 0) addRow('item1', status[0].item1.toString());
+  if (status[0].item2 > 0) addRow('item2', status[0].item2.toString());
+  if (status[0].item3 > 0) addRow('item3', status[0].item3.toString());
+  if (status[0].item4 > 0) addRow('item4', status[0].item4.toString());
+  if (status[0].item5 > 0) addRow('item5', status[0].item5.toString());
+  if (status[0].item6 > 0) addRow('item6', status[0].item6.toString());
+  if (status[0].item7 > 0) addRow('item7', status[0].item7.toString());
+  if (status[0].item8 > 0) addRow('item8', status[0].item8.toString());
+  if (status[0].item9 > 0) addRow('item9', status[0].item9.toString());
 }
+
+function addRow(itemName: string, value: string) {
+  const table: HTMLTableElement = <HTMLTableElement>document.querySelector('#status-view > table');
+  const row: HTMLTableRowElement = table.insertRow(-1);
+  const cell1: HTMLTableCellElement = row.insertCell(-1);
+  const cell2: HTMLTableCellElement = row.insertCell(-1);
+  cell1.innerHTML = itemName;
+  cell2.innerHTML = value;
+}
+
+const ctx = document.querySelector('#chart-view > canvas');
 
 //@ts-ignore
 const myChart = new Chart(ctx, {
